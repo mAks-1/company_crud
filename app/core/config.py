@@ -1,5 +1,5 @@
 from pydantic import BaseModel, PostgresDsn
-from pydantic.v1 import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class RunConfig(BaseModel):
@@ -20,8 +20,15 @@ class DBConfig(BaseModel):
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        env_nested_delimiter="__",
+        env_prefix="CRUD__",
+    )
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
+    db: DBConfig
 
 
 settings = Settings()

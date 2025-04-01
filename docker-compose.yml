@@ -2,10 +2,9 @@ services:
   pg:
     image: postgres
     environment:
-      POSTGRES_DB: crud_test
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: crud
+      POSTGRES_USER: crud_user
+      POSTGRES_PASSWORD: crud
     ports:
       - "5432:5432"
 

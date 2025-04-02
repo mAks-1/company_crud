@@ -49,6 +49,10 @@ class UpdateUser(BaseModel):
     company_id: Optional[int] = None
 
 
+class DeleteUser(BaseModel):
+    message: str
+
+
 class ReadUser(UserBase):
     user_id: int
     company_id: int

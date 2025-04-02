@@ -3,8 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.models import Company, db_helper
-from app.core.schemas.schemas import ReadCompany, CreateCompany, DeleteCompany
+from app.core.models import db_helper
+from app.core.schemas.schemas import (
+    ReadCompany,
+    CreateCompany,
+    DeleteCompany,
+    UpdateCompany,
+)
 from app.crud import companies as crud_companies
 
 router = APIRouter(
@@ -53,3 +58,18 @@ async def delete_company(
     )
 
     return company
+
+
+@router.patch("/{company_id}", response_model=ReadCompany)
+async def update_company_partial(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    company_update: UpdateCompany,
+    company_id_to_update: int,
+):
+    result = await crud_companies.update_company_by_id(
+        session=session,
+        company_update=company_update,
+        company_id_to_update=company_id_to_update,
+    )
+
+    return result

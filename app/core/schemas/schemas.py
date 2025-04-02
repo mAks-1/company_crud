@@ -16,7 +16,7 @@ class UpdateCompany(CompanyBase):
     pass
 
 
-class DeleteCompany(CompanyBase):
+class DeleteCompany(BaseModel):
     message: str
 
 

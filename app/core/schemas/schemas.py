@@ -39,7 +39,7 @@ class UserBase(BaseModel):
 
 
 class CreateUser(UserBase):
-    password: str
+    company_id: int
 
 
 class UpdateUser(BaseModel):

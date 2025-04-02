@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models import User, db_helper
-from app.core.schemas.schemas import ReadUser, CreateUser, DeleteUser
+from app.core.schemas.schemas import ReadUser, CreateUser, DeleteUser, UpdateUser
 from app.crud import users as crud_users
 
 router = APIRouter(
@@ -55,3 +55,17 @@ async def delete_user(
         user_id_to_delete=user_id_to_delete,
     )
     return user if user else None
+
+
+@router.patch("/{user_id}", response_model=ReadUser)
+async def update_user(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    user_update: UpdateUser,
+    user_id_to_update: int,
+):
+    result = await crud_users.update_user_by_id(
+        session=session,
+        user_to_update=user_update,
+        user_id_to_update=user_id_to_update,
+    )
+    return result if result else None

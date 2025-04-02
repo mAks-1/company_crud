@@ -7,3 +7,4 @@ class Company(Base):
     company_address: Mapped[str] = mapped_column(unique=True, nullable=False)
     company_email: Mapped[str] = mapped_column(unique=True, nullable=False)
     company_phone: Mapped[str] = mapped_column(nullable=False)
+    company_description: Mapped[str] = mapped_column(nullable=True)

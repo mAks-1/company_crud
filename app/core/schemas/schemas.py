@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class CompanyBase(BaseModel):
@@ -25,6 +25,32 @@ class DeleteCompany(BaseModel):
 
 
 class ReadCompany(CompanyBase):
+    company_id: int
+
+    class Config:
+        orm_mode = True
+
+
+# User models
+class UserBase(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+
+
+class CreateUser(UserBase):
+    password: str
+
+
+class UpdateUser(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    company_id: Optional[int] = None
+
+
+class ReadUser(UserBase):
+    user_id: int
     company_id: int
 
     class Config:

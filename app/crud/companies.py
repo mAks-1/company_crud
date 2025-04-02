@@ -27,3 +27,33 @@ async def get_all_companies(
     return companies
 
 
+async def get_company_by_id(
+    session: AsyncSession,
+    company_id_to_get: int,
+) -> Company:
+    result = await session.execute(
+        select(Company).filter(Company.company_id == company_id_to_get)
+    )
+    company = result.scalars().first()
+
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    return company
+
+
+async def delete_company_by_id(
+    session: AsyncSession,
+    company_id_to_delete: int,
+):
+    result = await session.execute(
+        select(Company).filter(Company.company_id == company_id_to_delete)
+    )
+
+    company = result.scalars().first()
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    await session.delete(company)
+    await session.commit()
+    return {"message": "Company deleted successfully"}

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 
 
@@ -59,3 +59,12 @@ class ReadUser(UserBase):
 
     class Config:
         orm_mode = True
+
+
+class UserSchema(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    username: str
+    password: bytes
+    email: EmailStr | None = None
+    active: bool = True

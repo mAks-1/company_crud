@@ -12,9 +12,25 @@ async def create_user(
     session: AsyncSession,
     user_create: CreateUser,
 ) -> User:
-    user = User(**user_create.model_dump())
+    # Check if username already exists
+    existing_user = await get_user_by_username(session, user_create.username)
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Username already exists",
+        )
+
+    # Hash the password
+    hashed_password = hash_password(user_create.password)
+
+    # Create user data dict
+    user_data = user_create.model_dump(exclude={"password"})
+    user_data["password_hash"] = hashed_password
+
+    user = User(**user_data)
     session.add(user)
     await session.commit()
+    await session.refresh(user)
     return user
 
 

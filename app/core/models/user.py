@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 
@@ -16,6 +16,8 @@ class User(Base):
     first_name: Mapped[str] = mapped_column(unique=False)
     last_name: Mapped[str] = mapped_column(unique=False)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
+
+    password_hash: Mapped[str] = mapped_column(String, nullable=False)
 
     # Зовнішній ключ для зв'язку з Company
     company_id: Mapped[int] = mapped_column(ForeignKey("companys.company_id"))

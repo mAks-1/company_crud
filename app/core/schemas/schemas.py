@@ -36,6 +36,19 @@ class UserBase(BaseModel):
     first_name: str
     last_name: str
     email: str
+    username: str
+
+    @field_validator("username")
+    def validate_username(cls, v):
+        if len(v) < 3:
+            raise ValueError("Username must be at least 3 characters")
+        if len(v) > 20:
+            raise ValueError("Username must be less than 20 characters")
+        if not re.match(r"^[a-zA-Z0-9_-]+$", v):
+            raise ValueError(
+                "Username can only contain letters, numbers, underscores, and hyphens"
+            )
+        return v
 
 
 class CreateUser(UserBase):

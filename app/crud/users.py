@@ -56,6 +56,16 @@ async def get_user_by_id(
     return user
 
 
+async def get_user_by_username(
+    session: AsyncSession,
+    user_username_to_get: str,
+) -> Optional[User]:
+    result = await session.execute(
+        select(User).where(User.username == user_username_to_get)
+    )
+    return result.scalars().first()
+
+
 async def delete_user_by_id(
     session: AsyncSession,
     user_id_to_delete: int,

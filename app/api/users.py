@@ -1,11 +1,19 @@
+from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models import User, db_helper
 from app.core.schemas.schemas import ReadUser, CreateUser, DeleteUser, UpdateUser
 from app.crud import users as crud_users
+from app.auth import utils_jwt as auth_utils
+
+
+from app.auth import auth_validation as auth_validation
+from app.auth import jwt as auth_jwt
+from app.api.jwt import TokenInfo
+
 
 router = APIRouter(
     prefix="/users",
@@ -18,54 +26,93 @@ async def get_users(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
 ):
     users = await crud_users.get_users(session=session)
-    return users if users else []
+    return users
 
 
-@router.post("/", response_model=ReadUser)
+# JUST FOR DEVELOPING
+@router.post("/", response_model=ReadUser, status_code=status.HTTP_201_CREATED)
 async def create_user(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    user_create: CreateUser,
+    user_data: CreateUser,
 ):
-    return await crud_users.create_user(
-        session=session,
-        user_create=user_create,
-    )
+    return await crud_users.create_user(session=session, user_create=user_data)
 
 
 @router.get("/{user_id}", response_model=ReadUser)
 async def get_user_by_id(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    user_id_to_get: int,
+    user_id: int,
 ):
     user = await crud_users.get_user_by_id(
         session=session,
-        user_id_to_get=user_id_to_get,
+        user_id_to_get=user_id,
     )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return user
 
-    return user if user else None
+
+@router.get("/usernames/{username}", response_model=ReadUser)
+async def get_user_by_username(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    username: str,
+):
+    user = await crud_users.get_user_by_username(
+        session=session,
+        user_username_to_get=username,
+    )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return user
 
 
 @router.delete("/{user_id}", response_model=DeleteUser)
 async def delete_user(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    user_id_to_delete: int,
+    user_id: int,
 ):
     user = await crud_users.delete_user_by_id(
         session=session,
-        user_id_to_delete=user_id_to_delete,
+        user_id_to_delete=user_id,
     )
-    return user if user else None
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return {"message": f"User with id {user_id} deleted successfully"}
 
 
 @router.patch("/{user_id}", response_model=ReadUser)
 async def update_user(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    user_id: int,
     user_update: UpdateUser,
-    user_id_to_update: int,
 ):
-    result = await crud_users.update_user_by_id(
+    update_data = user_update.model_dump(exclude_unset=True)
+
+    if "password" in update_data:
+        update_data["password_hash"] = auth_utils.hash_password(
+            update_data.pop("password")
+        )
+
+    user = await crud_users.update_user_by_id(
         session=session,
         user_to_update=user_update,
         user_id_to_update=user_id_to_update,
     )
     return result if result else None
+        user_id_to_update=user_id,
+        update_data=update_data,
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return user
+
+

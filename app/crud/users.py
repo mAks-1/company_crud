@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.models import User
 from app.core.schemas.schemas import CreateUser, UpdateUser
-from app.auth.utils_jwt import hash_password
+from app.auth.auth_password import hash_password
 
 
 async def create_user(

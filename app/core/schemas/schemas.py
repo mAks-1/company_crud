@@ -99,6 +99,7 @@ class ReadUser(UserBase):
 class UserSchema(BaseModel):
     model_config = ConfigDict(strict=True)
 
+    first_name: str
     username: str
     password: bytes
     email: EmailStr | None = None

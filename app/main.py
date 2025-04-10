@@ -3,13 +3,11 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-print(os.getenv("CRUD__DB__URL"))
-
 
 import uvicorn
 from fastapi import FastAPI
 
-from core.config import settings
+from app.core.config import settings
 
 from api import router as api_router
 
@@ -33,13 +31,13 @@ main_app = FastAPI(
 
 main_app.include_router(
     api_router,
-    prefix=settings.api.prefix,
+    # prefix=settings.api.prefix,
 )
 
 
 @main_app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Hi"}
 
 
 if __name__ == "__main__":

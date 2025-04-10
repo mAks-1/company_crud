@@ -25,6 +25,7 @@ def auth_user_check_self_info(
 ):
     iat = payload.get("iat")
     return {
+        "first_name": user.first_name,
         "username": user.username,
         "email": user.email,
         "logged_in_at": datetime.utcfromtimestamp(iat).isoformat() if iat else None,

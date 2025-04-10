@@ -1,18 +1,17 @@
-from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.models import User, db_helper
+from app.core.models import db_helper
 from app.core.schemas.schemas import ReadUser, CreateUser, DeleteUser, UpdateUser
 from app.crud import users as crud_users
-from app.auth import utils_jwt as auth_utils
 
 
 from app.auth import auth_validation as auth_validation
 from app.auth import jwt as auth_jwt
 from app.api.jwt import TokenInfo
+from app.auth import auth_password as auth_password
 
 
 router = APIRouter(
@@ -139,3 +138,31 @@ async def auth_user_issue_jwt(
         token_type="Bearer",
     )
 
+
+# FOR REAL REGISTRATION
+@router.post("/register/", response_model=ReadUser)
+async def register_user(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    user_data: CreateUser,
+):
+    # Check if user exists
+    try:
+        existing = await crud_users.get_user_by_username(
+            session=session,
+            user_username_to_get=user_data.username,
+        )
+        if existing:
+            raise HTTPException(
+                status_code=400,
+                detail="Username already exists",
+            )
+    except HTTPException as e:
+        if e.status_code != 404:
+            raise
+
+    # Create user
+    user = await crud_users.create_user(
+        session=session,
+        user_create=user_data,
+    )
+    return user

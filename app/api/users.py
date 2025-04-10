@@ -116,3 +116,26 @@ async def update_user(
     return user
 
 
+@router.post("/login/", response_model=TokenInfo)
+async def auth_user_issue_jwt(
+    session: AsyncSession = Depends(db_helper.session_getter),
+    username: str = Form(),
+    password: str = Form(),
+):
+    user = await auth_validation.validate_auth_user_from_db(
+        session=session,
+        username=username,
+        password=password,
+    )
+
+    jwt_payload = {
+        "sub": user.username,
+        "username": user.username,
+        "email": user.email,
+    }
+    token = auth_jwt.encode_jwt(jwt_payload)
+    return TokenInfo(
+        access_token=token,
+        token_type="Bearer",
+    )
+

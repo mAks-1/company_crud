@@ -94,16 +94,12 @@ async def update_user(
     update_data = user_update.model_dump(exclude_unset=True)
 
     if "password" in update_data:
-        update_data["password_hash"] = auth_utils.hash_password(
+        update_data["password_hash"] = auth_password.hash_password(
             update_data.pop("password")
         )
 
     user = await crud_users.update_user_by_id(
         session=session,
-        user_to_update=user_update,
-        user_id_to_update=user_id_to_update,
-    )
-    return result if result else None
         user_id_to_update=user_id,
         update_data=update_data,
     )

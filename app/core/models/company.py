@@ -11,7 +11,7 @@ class Company(Base):
     company_id: Mapped[int] = mapped_column(primary_key=True)
 
     company_name: Mapped[str] = mapped_column(unique=True, nullable=False)
-    company_address: Mapped[str] = mapped_column(unique=True, nullable=False)
+    company_address: Mapped[str] = mapped_column(unique=False, nullable=False)
     company_email: Mapped[str] = mapped_column(unique=True, nullable=False)
     company_phone: Mapped[str] = mapped_column(nullable=False)
     company_description: Mapped[str] = mapped_column(nullable=True)

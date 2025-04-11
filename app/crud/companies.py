@@ -79,6 +79,8 @@ async def update_company_by_id(
         company.company_email = company_update.company_email
     if company_update.company_phone is not None:
         company.company_phone = company_update.company_phone
+    if company_update.company_description is not None:
+        company.company_description = company_update.company_description
 
     await session.commit()
     await session.refresh(company)

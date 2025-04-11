@@ -39,10 +39,10 @@ async def create_company(
 @router.get("/{company_id}", response_model=ReadCompany)
 async def get_company_by_id(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    company_id_to_get: int,
+    company_id: int,
 ):
     company = await crud_companies.get_company_by_id(
-        session=session, company_id_to_get=company_id_to_get
+        session=session, company_id_to_get=company_id
     )
     return company
 
@@ -50,11 +50,11 @@ async def get_company_by_id(
 @router.delete("/{company_id}", response_model=DeleteCompany)
 async def delete_company(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    company_id_to_delete: int,
+    company_id: int,
 ):
     company = await crud_companies.delete_company_by_id(
         session=session,
-        company_id_to_delete=company_id_to_delete,
+        company_id_to_delete=company_id,
     )
 
     return company
@@ -64,12 +64,12 @@ async def delete_company(
 async def update_company_partial(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     company_update: UpdateCompany,
-    company_id_to_update: int,
+    company_id: int,
 ):
     result = await crud_companies.update_company_by_id(
         session=session,
         company_update=company_update,
-        company_id_to_update=company_id_to_update,
+        company_id_to_update=company_id,
     )
 
     return result

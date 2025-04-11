@@ -13,6 +13,7 @@ class CompanyBase(BaseModel):
     company_address: str
     company_email: str
     company_phone: str
+    company_description: Optional[str] = None
 
 
 class CreateCompany(CompanyBase):
@@ -24,6 +25,7 @@ class UpdateCompany(BaseModel):
     company_address: Optional[str] = None
     company_email: Optional[str] = None
     company_phone: Optional[str] = None
+    company_description: Optional[str] = None
 
 
 class DeleteCompany(BaseModel):

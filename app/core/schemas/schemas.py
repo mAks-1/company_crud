@@ -46,6 +46,7 @@ class UserBase(BaseModel):
     email: str
     username: str
     active: bool
+    role: str
 
     # ALSO NEED EMAIL VERIFICATION
 

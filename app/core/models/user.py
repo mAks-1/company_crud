@@ -20,6 +20,8 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
     active: Mapped[bool] = mapped_column(default=True)
 
+    role: Mapped[str] = mapped_column(default="Staff member")
+
     # Зовнішній ключ для зв'язку з Company
     company_id: Mapped[int] = mapped_column(ForeignKey("companys.company_id"))
 

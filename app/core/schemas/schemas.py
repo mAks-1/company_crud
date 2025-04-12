@@ -79,6 +79,7 @@ class CreateUser(UserBase):
 
 
 class UpdateUser(BaseModel):
+    username: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[str] = None

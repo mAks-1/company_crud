@@ -101,7 +101,7 @@ async def update_user(
     user = await crud_users.update_user_by_id(
         session=session,
         user_id_to_update=user_id,
-        update_data=update_data,
+        update_data=user_update,
     )
 
     if not user:

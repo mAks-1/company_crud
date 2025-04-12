@@ -72,16 +72,29 @@ async def delete_user_by_id(
 async def update_user_by_id(
     session: AsyncSession,
     user_id_to_update: int,
-    update_data: dict,
+    update_data: UpdateUser,
 ) -> User:
     user = await get_user_by_id(session, user_id_to_update)
 
     if "password" in update_data:
         update_data["password_hash"] = hash_password(update_data.pop("password"))
 
-    for field, value in update_data.items():
-        if hasattr(user, field) and value is not None:
-            setattr(user, field, value)
+    # for field, value in update_data.items():
+    #     if hasattr(user, field) and value is not None:
+    #         setattr(user, field, value)
+
+    if update_data.username is not None:
+        user.username = update_data.username
+    if update_data.email is not None:
+        user.email = update_data.email
+    if update_data.first_name is not None:
+        user.first_name = update_data.first_name
+    if update_data.last_name is not None:
+        user.last_name = update_data.last_name
+    if update_data.company_id is not None:
+        user.company_id = update_data.company_id
+    if update_data.password is not None:
+        user.password = update_data.password
 
     await session.commit()
     await session.refresh(user)

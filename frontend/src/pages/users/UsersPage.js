@@ -60,6 +60,7 @@ const UsersPage = () => {
               <th>Username</th>
               <th>Email</th>
               {/*<th>Role</th>*/}
+              <th>Active</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -69,6 +70,7 @@ const UsersPage = () => {
                 <td>{user.user_id}</td>
                 <td>{user.username}</td>
                 <td>{user.email || '-'}</td>
+                <td>{user.active ? 'Online' : 'Offline'}</td>
                 {/*<td>{user.role}</td>*/}
                 <td>
                   <button onClick={() => navigate(`/users/${user.user_id}/`)}>Edit</button>

@@ -12,35 +12,41 @@ const UserFormPage = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    role: 'user',
+    // role: 'user',
     password: '',
   });
 
   const isEditMode = id && id !== 'new';
 
   useEffect(() => {
-    if (isEditMode) {
-      const fetchUser = async () => {
-        setLoading(true);
-        try {
-          const response = await axios.get(`/api/users/${id}/`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setFormData({
-            username: response.data.username,
-            email: response.data.email || '',
-            role: response.data.role,
-            password: '',
-          });
-        } catch (err) {
-          setError(err.response?.data?.detail || 'Failed to fetch user');
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUser();
-    }
-  }, [id, token, isEditMode]);
+  if (isEditMode) {
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`/api/users/${id}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        });
+        console.log('API Response:', response.data); // Додайте логування
+
+        // Оновлено: прибираємо перевірку на response.data.user
+        setFormData({
+          username: response.data.username || '',
+          email: response.data.email || '',
+          password: '', // Пароль завжди пустий при редагуванні
+        });
+      } catch (err) {
+        console.error('Error fetching user:', err);
+        setError(err.response?.data?.detail || 'Failed to fetch user');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }
+}, [id, token, isEditMode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,7 +60,7 @@ const UserFormPage = () => {
 
     try {
       if (isEditMode) {
-        await axios.put(`/api/users/${id}/`, formData, {
+        await axios.patch(`/api/users/${id}/`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
@@ -100,19 +106,19 @@ const UserFormPage = () => {
             />
           </div>
 
-          <div>
-            <label>Role</label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              required
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-              <option value="manager">Manager</option>
-            </select>
-          </div>
+          {/*<div>*/}
+          {/*  <label>Role</label>*/}
+          {/*  <select*/}
+          {/*    name="role"*/}
+          {/*    value={formData.role}*/}
+          {/*    onChange={handleChange}*/}
+          {/*    required*/}
+          {/*  >*/}
+          {/*    <option value="user">User</option>*/}
+          {/*    <option value="admin">Admin</option>*/}
+          {/*    <option value="manager">Manager</option>*/}
+          {/*  </select>*/}
+          {/*</div>*/}
 
           <div>
             <label>Password</label>

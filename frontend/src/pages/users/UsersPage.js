@@ -33,7 +33,7 @@ const UsersPage = () => {
         await axios.delete(`/api/users/${userId}/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUsers(users.filter(user => user.id !== userId));
+        setUsers(users.filter(user => user.user_id !== userId));
       } catch (err) {
         setError(err.response?.data?.detail || 'Failed to delete user');
       }
@@ -59,20 +59,20 @@ const UsersPage = () => {
               <th>ID</th>
               <th>Username</th>
               <th>Email</th>
-              <th>Role</th>
+              {/*<th>Role</th>*/}
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.map(user => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
+              <tr key={user.user_id}>
+                <td>{user.user_id}</td>
                 <td>{user.username}</td>
                 <td>{user.email || '-'}</td>
-                <td>{user.role}</td>
+                {/*<td>{user.role}</td>*/}
                 <td>
-                  <button onClick={() => navigate(`/users/${user.id}/edit`)}>Edit</button>
-                  <button className="btn-danger" onClick={() => handleDelete(user.id)}>Delete</button>
+                  <button onClick={() => navigate(`/users/${user.user_id}/`)}>Edit</button>
+                  <button className="btn-danger" onClick={() => handleDelete(user.user_id)}>Delete</button>
                 </td>
               </tr>
             ))}

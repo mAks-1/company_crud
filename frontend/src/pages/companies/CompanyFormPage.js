@@ -68,7 +68,23 @@ const CompanyFormPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleApiError = (err, context = "") => {
+    console.error(`Error ${context}:`, err);
+    if (err.response?.status === 422) {
+      const errorData = err.response.data.detail;
+      setError(
+        Array.isArray(errorData)
+          ? errorData.map((e) => e.msg).join(", ")
+          : errorData.msg || "Validation error",
+      );
+    } else {
+      setError(
+        err.response?.data?.detail || `Error ${context}. Please try again.`,
+      );
+    }
   };
 
   const handleSubmit = async (e) => {

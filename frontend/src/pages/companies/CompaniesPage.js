@@ -56,14 +56,15 @@ const CompaniesPage = () => {
 
         <table>
           <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Description</th>
-          </tr>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Status</th>
+              {currentUser?.role === "Company manager" && <th>Actions</th>}
+            </tr>
           </thead>
           <tbody>
             {companies.map(company => (
@@ -74,6 +75,14 @@ const CompaniesPage = () => {
                   <td>{company.company_email || '-'}</td>
                   <td>{company.company_phone || '-'}</td>
                   <td>{company.company_description || '-'}</td>
+            {companies.map((company) => (
+              <tr key={company.company_id}>
+                <td>{company.company_id}</td>
+                <td>{company.company_name}</td>
+                <td>{company.company_address || "-"}</td>
+                <td>{company.company_email || "-"}</td>
+                <td>{company.company_phone || "-"}</td>
+                <td>{company.active ? "Active" : "Inactive"}</td>
                   <td>
                     <button onClick={() => navigate(`/companies/${company.company_id}`)}>Edit</button>
                     <button className="btn-danger" onClick={() => handleDelete(company.company_id)}>Delete</button>

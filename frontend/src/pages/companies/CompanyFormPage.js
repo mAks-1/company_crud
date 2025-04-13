@@ -17,7 +17,7 @@ const CompanyFormPage = () => {
     company_description: "",
   });
 
-  const isEditMode = id && id !== 'new';
+  const isEditMode = id && id !== "new";
 
   useEffect(() => {
     if (isEditMode) {
@@ -27,37 +27,19 @@ const CompanyFormPage = () => {
           const response = await axios.get(`/api/companies/${id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
+              "Content-Type": "application/json",
             },
           });
 
-          if (response.data) {
-            setFormData({
-              company_name: response.data.company_name ?? '',
-              company_address: response.data.company_address ?? '',
-              company_email: response.data.company_email ?? '',
-              company_phone: response.data.company_phone ?? '',
-              company_description: response.data.company_description ?? '',
-            });
-
-          }
+          setFormData({
+            company_name: response.data.company_name || "",
+            company_address: response.data.company_address || "",
+            company_email: response.data.company_email || "",
+            company_phone: response.data.company_phone || "",
+            company_description: response.data.company_description || "",
+          });
         } catch (err) {
-          console.error('Error fetching company:', err);
-          // Покращена обробка помилок
-          if (err.response) {
-            if (err.response.status === 422) {
-              const errorData = err.response.data.detail;
-              if (Array.isArray(errorData)) {
-                setError(errorData.map(e => e.msg).join(', '));
-              } else {
-                setError(errorData.msg || 'Validation error');
-              }
-            } else {
-              setError(err.response.data?.detail || 'Failed to fetch company');
-            }
-          } else {
-            setError('Network error or server is not responding');
-          }
+          handleApiError(err, "fetching company");
         } finally {
           setLoading(false);
         }
@@ -96,28 +78,18 @@ const CompanyFormPage = () => {
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       };
 
       if (isEditMode) {
         await axios.patch(`/api/companies/${id}`, formData, config);
       } else {
-        await axios.post('/api/companies/', formData, config);
+        await axios.post("/api/companies/", formData, config);
       }
-      navigate('/companies');
+      navigate("/companies");
     } catch (err) {
-      console.error('Error submitting form:', err);
-      if (err.response?.status === 422) {
-        const errorData = err.response.data.detail;
-        if (Array.isArray(errorData)) {
-          setError(errorData.map(e => e.msg).join(', '));
-        } else {
-          setError(errorData.msg || 'Validation failed');
-        }
-      } else {
-        setError(err.response?.data?.detail || 'Operation failed. Please try again.');
-      }
+      handleApiError(err, "submitting form");
     } finally {
       setLoading(false);
     }
@@ -126,73 +98,101 @@ const CompanyFormPage = () => {
   if (loading) return <div className="loading">Loading...</div>;
 
   return (
-    <div className="container">
-      <div className="card">
-        <h2>{isEditMode ? 'Edit Company' : 'Create New Company'}</h2>
+    <div className="container mx-auto p-4">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold mb-4">
+          {isEditMode ? "Edit Company" : "Create New Company"}
+        </h2>
+
         {error && (
-            <div className="error">
-              {typeof error === 'string' ? error : JSON.stringify(error)}
-            </div>
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+            {error}
+          </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Company Name - Always editable */}
           <div>
-            <label>Company Name</label>
+            <label className="block text-gray-700 mb-2">Company Name *</label>
             <input
-                type="text"
-                name="company_name"
-                value={formData.company_name || ''}
-                onChange={handleChange}
-                required
+              type="text"
+              name="company_name"
+              value={formData.company_name}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
             />
           </div>
 
+          {/* Address - Editable in both modes */}
           <div>
-            <label>Address</label>
+            <label className="block text-gray-700 mb-2">Address</label>
             <input
-                type="text"
-                name="company_address"
-                value={formData.company_address || ''}
-                onChange={handleChange}
+              type="text"
+              name="company_address"
+              value={formData.company_address}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
             />
           </div>
 
-          <div>
-            <label>Email</label>
-            <input
+          {/* Contact Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 mb-2">Email</label>
+              <input
                 type="email"
                 name="company_email"
-                value={formData.company_email || ''}
+                value={formData.company_email}
                 onChange={handleChange}
-            />
-          </div>
-
-          <div>
-            <label>Phone</label>
-            <input
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-2">Phone</label>
+              <input
                 type="tel"
                 name="company_phone"
-                value={formData.company_phone || ''}
+                value={formData.company_phone}
                 onChange={handleChange}
-            />
+                className="w-full p-2 border rounded"
+              />
+            </div>
           </div>
 
+          {/* Description */}
           <div>
-            <label>Description</label>
+            <label className="block text-gray-700 mb-2">Description</label>
             <textarea
-                name="company_description"
-                value={formData.company_description || ''}
-                onChange={handleChange}
-                rows={3}
+              name="company_description"
+              value={formData.company_description}
+              onChange={handleChange}
+              rows={3}
+              className="w-full p-2 border rounded"
             />
           </div>
 
-          <button type="submit" className="px-4 py-2 mt-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-            {isEditMode ? 'Update Company' : 'Create Company'}
-          </button>
-          <button type="button" onClick={() => navigate('/users')}>
-            Cancel
-          </button>
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-4 pt-4">
+            <button
+              type="button"
+              onClick={() => navigate("/companies")}
+              className="px-4 py-2 border rounded hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`px-4 py-2 rounded text-white ${loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"}`}
+            >
+              {loading
+                ? "Processing..."
+                : isEditMode
+                  ? "Update Company"
+                  : "Create Company"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

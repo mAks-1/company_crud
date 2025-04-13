@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate, useParams } from "react-router-dom";
 
 const UserFormPage = () => {
-  const { token } = useAuth();
+  const { user: currentUser, token } = useAuth();
+  // const { token } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ const UserFormPage = () => {
     password: "",
   });
 
-  const isEditMode = id && id !== 'new';
+  const isEditMode = id && id !== "new";
 
   useEffect(() => {
   if (isEditMode) {
@@ -33,6 +34,18 @@ const UserFormPage = () => {
           },
         });
         console.log('API Response:', response.data); // Додайте логування
+    if (!currentUser) return;
+
+    if (isEditMode) {
+      const fetchUser = async () => {
+        setLoading(true);
+        try {
+          const response = await axios.get(`/api/users/${id}/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
 
           setFormData({
             first_name: response.data.first_name || "",

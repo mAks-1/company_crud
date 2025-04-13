@@ -1,6 +1,6 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends
-from app.core.schemas.schemas import UserSchema
+from app.core.schemas.schemas import UserSchema, UserBase
 from app.auth.dependencies import (
     get_current_active_auth_user,
     get_current_token_payload,
@@ -21,12 +21,15 @@ class TokenInfo(BaseModel):
 @router.get("/users/me/")
 def auth_user_check_self_info(
     payload: dict = Depends(get_current_token_payload),
-    user: UserSchema = Depends(get_current_active_auth_user),
+    user: UserBase = Depends(get_current_active_auth_user),
 ):
     iat = payload.get("iat")
     return {
         "first_name": user.first_name,
+        "last_name": user.last_name,
         "username": user.username,
+        "active": user.active,
+        "role": user.role,
         "email": user.email,
         "logged_in_at": datetime.utcfromtimestamp(iat).isoformat() if iat else None,
     }

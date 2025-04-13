@@ -95,6 +95,8 @@ async def update_user_by_id(
         user.company_id = update_data.company_id
     if update_data.password is not None:
         user.password = update_data.password
+    if update_data.role is not None:
+        user.role = update_data.role
 
     await session.commit()
     await session.refresh(user)

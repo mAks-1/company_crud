@@ -87,6 +87,7 @@ class UpdateUser(BaseModel):
     email: Optional[str] = None
     company_id: Optional[int] = None
     password: Optional[str] = None
+    role: Optional[str] = None
 
 
 class DeleteUser(BaseModel):

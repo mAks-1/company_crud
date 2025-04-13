@@ -13,13 +13,13 @@ const CompaniesPage = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get('/api/companies/', {
+        const response = await axios.get("/api/companies/", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCompanies(response.data);
       } catch (err) {
-        console.error('Error:', err);
-        setError(err.response?.data?.detail || 'Failed to fetch companies');
+        console.error("Error:", err);
+        setError(err.response?.data?.detail || "Failed to fetch companies");
       } finally {
         setLoading(false);
       }
@@ -29,14 +29,16 @@ const CompaniesPage = () => {
   }, [token]);
 
   const handleDelete = async (companyId) => {
-    if (window.confirm('Are you sure you want to delete this company?')) {
+    if (window.confirm("Are you sure you want to delete this company?")) {
       try {
         await axios.delete(`/api/companies/${companyId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setCompanies(companies.filter(company => company.company_id !== companyId));
+        setCompanies(
+          companies.filter((company) => company.company_id !== companyId),
+        );
       } catch (err) {
-        setError(err.response?.data?.detail || 'Failed to delete company');
+        setError(err.response?.data?.detail || "Failed to delete company");
       }
     }
   };
@@ -47,11 +49,22 @@ const CompaniesPage = () => {
   return (
     <div className="container">
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <h2>Companies Management</h2>
-          <button className="btn-success" onClick={() => navigate('/companies/new')}>
-            Add New Company
-          </button>
+          {currentUser?.role === "Company manager" && (
+            <button
+              className="btn-success"
+              onClick={() => navigate("/companies/new")}
+            >
+              Add New Company
+            </button>
+          )}
         </div>
 
         <table>
@@ -67,14 +80,6 @@ const CompaniesPage = () => {
             </tr>
           </thead>
           <tbody>
-            {companies.map(company => (
-                <tr key={company.company_id}>
-                  <td>{company.company_id}</td>
-                  <td>{company.company_name}</td>
-                  <td>{company.company_address || '-'}</td>
-                  <td>{company.company_email || '-'}</td>
-                  <td>{company.company_phone || '-'}</td>
-                  <td>{company.company_description || '-'}</td>
             {companies.map((company) => (
               <tr key={company.company_id}>
                 <td>{company.company_id}</td>
@@ -83,11 +88,25 @@ const CompaniesPage = () => {
                 <td>{company.company_email || "-"}</td>
                 <td>{company.company_phone || "-"}</td>
                 <td>{company.active ? "Active" : "Inactive"}</td>
+                {currentUser?.role === "Company manager" && (
                   <td>
-                    <button onClick={() => navigate(`/companies/${company.company_id}`)}>Edit</button>
-                    <button className="btn-danger" onClick={() => handleDelete(company.company_id)}>Delete</button>
+                    <button
+                      className="btn-edit"
+                      onClick={() =>
+                        navigate(`/companies/${company.company_id}`)
+                      }
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn-danger"
+                      onClick={() => handleDelete(company.company_id)}
+                    >
+                      Delete
+                    </button>
                   </td>
-                </tr>
+                )}
+              </tr>
             ))}
           </tbody>
         </table>

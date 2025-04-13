@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CompanyFormPage = () => {
-  const { token } = useAuth();
+  const { user: currentUser, token } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
-    company_name: '',
-    company_address: '',
-    company_email: '',
-    company_phone: '',
-    company_description: '',
+    company_name: "",
+    company_address: "",
+    company_email: "",
+    company_phone: "",
+    company_description: "",
   });
 
   const isEditMode = id && id !== 'new';

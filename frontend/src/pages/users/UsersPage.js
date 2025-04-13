@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const UsersPage = () => {
-  const { token } = useAuth();
+  const { user: currentUser, token } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,12 +13,12 @@ const UsersPage = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('/api/users/', {
+        const response = await axios.get("/api/users/", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);
       } catch (err) {
-        setError(err.response?.data?.detail || 'Failed to fetch users');
+        setError(err.response?.data?.detail || "Failed to fetch users");
       } finally {
         setLoading(false);
       }
@@ -28,14 +28,14 @@ const UsersPage = () => {
   }, [token]);
 
   const handleDelete = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await axios.delete(`/api/users/${userId}/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUsers(users.filter(user => user.user_id !== userId));
+        setUsers(users.filter((user) => user.user_id !== userId));
       } catch (err) {
-        setError(err.response?.data?.detail || 'Failed to delete user');
+        setError(err.response?.data?.detail || "Failed to delete user");
       }
     }
   };
@@ -46,7 +46,13 @@ const UsersPage = () => {
   return (
     <div className="container">
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <h2>Users Management</h2>
           <button className="btn-success" onClick={() => navigate('/users/new')}>
             Add New User
@@ -62,16 +68,20 @@ const UsersPage = () => {
               {/*<th>Role</th>*/}
               <th>Active</th>
               <th>Actions</th>
+              <th>Role</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
+            {users.map((user) => (
               <tr key={user.user_id}>
                 <td>{user.user_id}</td>
                 <td>{user.username}</td>
                 <td>{user.email || '-'}</td>
                 <td>{user.active ? 'Online' : 'Offline'}</td>
                 {/*<td>{user.role}</td>*/}
+                <td>{user.email || "-"}</td>
+                <td>{user.role}</td>
                 <td>
                   <button onClick={() => navigate(`/users/${user.user_id}/`)}>Edit</button>
                   <button className="btn-danger" onClick={() => handleDelete(user.user_id)}>Delete</button>

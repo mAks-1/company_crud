@@ -10,10 +10,13 @@ const UserFormPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    // role: 'user',
-    password: '',
+    first_name: "",
+    last_name: "",
+    username: "",
+    email: "",
+    role: "",
+    active: "",
+    password: "",
   });
 
   const isEditMode = id && id !== 'new';
@@ -31,22 +34,25 @@ const UserFormPage = () => {
         });
         console.log('API Response:', response.data); // Додайте логування
 
-        // Оновлено: прибираємо перевірку на response.data.user
-        setFormData({
-          username: response.data.username || '',
-          email: response.data.email || '',
-          password: '', // Пароль завжди пустий при редагуванні
-        });
-      } catch (err) {
-        console.error('Error fetching user:', err);
-        setError(err.response?.data?.detail || 'Failed to fetch user');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }
-}, [id, token, isEditMode]);
+          setFormData({
+            first_name: response.data.first_name || "",
+            last_name: response.data.last_name || "",
+            username: response.data.username || "",
+            email: response.data.email || "",
+            password: "",
+            role: response.data.role || "",
+            active: response.data.active || "",
+          });
+        } catch (err) {
+          console.error("Error fetching user:", err);
+          setError(err.response?.data?.detail || "Failed to fetch user");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchUser();
+    }
+  }, [id, token, isEditMode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

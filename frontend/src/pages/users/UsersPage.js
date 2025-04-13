@@ -54,9 +54,15 @@ const UsersPage = () => {
           }}
         >
           <h2>Users Management</h2>
-          <button className="btn-success" onClick={() => navigate('/users/new')}>
-            Add New User
-          </button>
+          {(currentUser?.role === "Company manager" ||
+            currentUser?.role === "Admin") && (
+            <button
+              className="btn-success"
+              onClick={() => navigate("/users/new")}
+            >
+              Add New User
+            </button>
+          )}
         </div>
 
         <table>
@@ -65,11 +71,10 @@ const UsersPage = () => {
               <th>ID</th>
               <th>Username</th>
               <th>Email</th>
-              {/*<th>Role</th>*/}
-              <th>Active</th>
-              <th>Actions</th>
               <th>Role</th>
               <th>Status</th>
+              {(currentUser?.role === "Company manager" ||
+                currentUser?.role === "Admin") && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -77,14 +82,34 @@ const UsersPage = () => {
               <tr key={user.user_id}>
                 <td>{user.user_id}</td>
                 <td>{user.username}</td>
-                <td>{user.email || '-'}</td>
-                <td>{user.active ? 'Online' : 'Offline'}</td>
-                {/*<td>{user.role}</td>*/}
                 <td>{user.email || "-"}</td>
                 <td>{user.role}</td>
+                <td>{user.active ? "Online" : "Offline"}</td>
                 <td>
-                  <button onClick={() => navigate(`/users/${user.user_id}/`)}>Edit</button>
-                  <button className="btn-danger" onClick={() => handleDelete(user.user_id)}>Delete</button>
+                  {/* Кнопка Edit - доступна для адмінів (включаючи себе) та менеджерів (крім адмінів) */}
+                  {(currentUser?.role === "Admin" ||
+                    (currentUser?.role === "Company manager" &&
+                      user.role !== "Admin")) && (
+                    <button
+                      onClick={() => navigate(`/users/${user.user_id}/`)}
+                      className="btn-edit"
+                    >
+                      Edit
+                    </button>
+                  )}
+
+                  {/* Кнопка Delete - доступна тільки для адмінів (крім себе) та менеджерів (крім адмінів) */}
+                  {(currentUser?.role === "Company manager" &&
+                    user.role !== "Admin") ||
+                  (currentUser?.role === "Admin" &&
+                    user.user_id !== currentUser?.user_id) ? (
+                    <button
+                      className="btn-danger"
+                      onClick={() => handleDelete(user.user_id)}
+                    >
+                      Delete
+                    </button>
+                  ) : null}
                 </td>
               </tr>
             ))}

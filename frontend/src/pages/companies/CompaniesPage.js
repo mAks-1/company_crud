@@ -57,7 +57,8 @@ const CompaniesPage = () => {
           }}
         >
           <h2>Companies Management</h2>
-          {currentUser?.role === "Company manager" && (
+          {(currentUser?.role === "Company manager" ||
+            currentUser?.role === "Admin") && (
             <button
               className="btn-success"
               onClick={() => navigate("/companies/new")}
@@ -76,7 +77,8 @@ const CompaniesPage = () => {
               <th>Email</th>
               <th>Phone</th>
               <th>Status</th>
-              {currentUser?.role === "Company manager" && <th>Actions</th>}
+              {(currentUser?.role === "Company manager" ||
+                currentUser?.role === "Admin") && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -88,8 +90,10 @@ const CompaniesPage = () => {
                 <td>{company.company_email || "-"}</td>
                 <td>{company.company_phone || "-"}</td>
                 <td>{company.active ? "Active" : "Inactive"}</td>
-                {currentUser?.role === "Company manager" && (
+                {(currentUser?.role === "Company manager" ||
+                  currentUser?.role === "Admin") && (
                   <td>
+                    {/* Edit button - available for Admins and Company managers */}
                     <button
                       className="btn-edit"
                       onClick={() =>
@@ -98,6 +102,8 @@ const CompaniesPage = () => {
                     >
                       Edit
                     </button>
+
+                    {/* Delete button - available for Admins and Company managers except for their own company if needed */}
                     <button
                       className="btn-danger"
                       onClick={() => handleDelete(company.company_id)}

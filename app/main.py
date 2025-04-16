@@ -9,8 +9,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from api import router as api_router
-from core.models import db_helper, Base
+from app.api import router as api_router
+from app.core.models import db_helper, Base
 
 
 @asynccontextmanager

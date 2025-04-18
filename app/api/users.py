@@ -123,6 +123,10 @@ async def auth_user_issue_jwt(
         password=password,
     )
 
+    user.active = True
+    session.add(user)
+    await session.commit()
+
     jwt_payload = {
         "sub": user.username,
         "username": user.username,

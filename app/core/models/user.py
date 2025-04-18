@@ -1,4 +1,5 @@
 from sqlalchemy import ForeignKey, String
+
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 
@@ -18,7 +19,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
-    active: Mapped[bool] = mapped_column(default=True)
+    active: Mapped[bool] = mapped_column(default=False)
 
     role: Mapped[str] = mapped_column(default="Staff member")
 

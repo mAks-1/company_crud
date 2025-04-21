@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.models import db_helper
 from app.auth import jwt as jwt_utils
 from app.crud import users as crud_users
+from app.chat.chat_utils import save_message, get_last_messages
 
 router = APIRouter()
 
@@ -65,6 +66,11 @@ async def websocket_endpoint(
     await websocket.accept()
 
     await manager.connect(websocket)
+
+    last_messages = await get_last_messages(session)
+    for msg in last_messages:
+        await websocket.send_text(f"{msg.user.username}: {msg.content}")
+
     try:
         while True:
             data = await websocket.receive_text()

@@ -1,13 +1,17 @@
+//Chat
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Chat() {
+  const { user: currentUser, token } = useAuth();
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const ws = useRef(null);
 
   useEffect(() => {
     // ws.current = new WebSocket(`ws://${window.location.host}/chat/ws`);
-    ws.current = new WebSocket("ws://localhost:8000/chat/ws");
+    // ws.current = new WebSocket("ws://localhost:8000/chat/ws");
+    ws.current = new WebSocket(`ws://localhost:8000/chat/ws?token=${token}`);
 
     ws.current.onmessage = (event) => {
       setMessages((prev) => [...prev, event.data]);

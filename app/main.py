@@ -12,6 +12,8 @@ from app.core.config import settings
 from app.api import router as api_router
 from app.core.models import db_helper, Base
 
+from app.chat import router as chat_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,9 +34,14 @@ main_app.include_router(
     # prefix=settings.api.prefix,
 )
 
+main_app.include_router(
+    chat_router,
+)
+
 main_app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # або ["*"] для розробки
+    allow_origins=["*"],
+    # allow_origins=["http://localhost:3000"],  # або ["*"] для розробки
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

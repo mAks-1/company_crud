@@ -74,6 +74,9 @@ async def websocket_endpoint(
     try:
         while True:
             data = await websocket.receive_text()
+
+            await save_message(session=session, user_id=user.user_id, content=data)
+
             await manager.broadcast(f"{user.username}: {data}")
     except Exception as e:
         print("Connection closed:", e)

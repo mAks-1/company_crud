@@ -28,3 +28,6 @@ class User(Base):
 
     # Відношення багатьох-до-одного з Company
     company: Mapped["Company"] = relationship(back_populates="users")
+
+    #
+    messages = relationship("Message", back_populates="user")

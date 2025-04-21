@@ -1,5 +1,14 @@
-from fastapi import APIRouter, WebSocket
+from typing import Annotated
 
+from fastapi import APIRouter, WebSocket, Depends, status
+
+from jwt.exceptions import InvalidTokenError
+from requests import session
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.models import db_helper
+from app.auth import jwt as jwt_utils
+from app.crud import users as crud_users
 
 router = APIRouter()
 
@@ -9,7 +18,6 @@ class ConnectionManager:
         self.active_connections: list[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
-        await websocket.accept()
         self.active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
@@ -27,5 +35,41 @@ manager = ConnectionManager()
 
 
 @router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, user_id: int):
-    pass
+async def websocket_endpoint(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    websocket: WebSocket,
+):
+    token = websocket.query_params.get("token")
+    if not token:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+
+    try:
+        payload = jwt_utils.decode_jwt(token)
+    except InvalidTokenError:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+
+    username = payload.get("sub")
+    if not username:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+
+    user = await crud_users.get_user_by_username(
+        session=session, user_username_to_get=username
+    )
+    if not user:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+
+    await websocket.accept()
+
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await manager.broadcast(f"{user.username}: {data}")
+    except Exception as e:
+        print("Connection closed:", e)
+    finally:
+        manager.disconnect(websocket)

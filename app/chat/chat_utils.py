@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
 from app.core.models import Message
 from datetime import datetime
 
@@ -9,9 +11,12 @@ async def save_message(session: AsyncSession, user_id: int, content: str):
     session.add(message)
     await session.commit()
 
+
 async def get_last_messages(session: AsyncSession, limit: int = 20):
     result = await session.execute(
-        select(Message).order_by(Message.timestamp.desc()).limit(limit)
+        select(Message)
+        .options(selectinload(Message.user))
+        .order_by(Message.timestamp.desc())
+        .limit(limit)
     )
-    messages = result.scalars().all()
-    return reversed(messages)
+    return reversed(result.scalars().all())

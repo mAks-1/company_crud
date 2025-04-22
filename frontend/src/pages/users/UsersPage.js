@@ -1,3 +1,4 @@
+//UserPage
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
@@ -86,7 +87,6 @@ const UsersPage = () => {
                 <td>{user.role}</td>
                 <td>{user.active ? "Online" : "Offline"}</td>
                 <td>
-                  {/* Кнопка Edit - доступна для адмінів (включаючи себе) та менеджерів (крім адмінів) */}
                   {(currentUser?.role === "Admin" ||
                     (currentUser?.role === "Company manager" &&
                       user.role !== "Admin")) && (
@@ -98,7 +98,6 @@ const UsersPage = () => {
                     </button>
                   )}
 
-                  {/* Кнопка Delete - доступна тільки для адмінів (крім себе) та менеджерів (крім адмінів) */}
                   {(currentUser?.role === "Company manager" &&
                     user.role !== "Admin") ||
                   (currentUser?.role === "Admin" &&

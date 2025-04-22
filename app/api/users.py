@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.models import db_helper
+from app.auth.dependencies import get_current_auth_user
+from app.core.models import db_helper, User
 from app.core.schemas.schemas import ReadUser, CreateUser, DeleteUser, UpdateUser
 from app.crud import users as crud_users
 
@@ -123,6 +124,10 @@ async def auth_user_issue_jwt(
         password=password,
     )
 
+    user.active = True
+    session.add(user)
+    await session.commit()
+
     jwt_payload = {
         "sub": user.username,
         "username": user.username,
@@ -133,6 +138,17 @@ async def auth_user_issue_jwt(
         access_token=token,
         token_type="Bearer",
     )
+
+
+@router.post("/logout/", status_code=status.HTTP_204_NO_CONTENT)
+async def logout_current_user(
+    session: AsyncSession = Depends(db_helper.session_getter),
+    current_user: User = Depends(get_current_auth_user),
+):
+    # позначаємо inactive
+    current_user.active = False
+    session.add(current_user)
+    await session.commit()
 
 
 # FOR REAL REGISTRATION

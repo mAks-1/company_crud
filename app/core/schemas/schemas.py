@@ -45,7 +45,7 @@ class UserBase(BaseModel):
     last_name: str
     email: str
     username: str
-    active: bool
+    active: bool = False
     role: str
 
     # ALSO NEED EMAIL VERIFICATION
@@ -109,7 +109,7 @@ class UserSchema(BaseModel):
     username: str
     password: bytes
     email: EmailStr | None = None
-    active: bool = True
+    active: bool = False
 
 
 # test

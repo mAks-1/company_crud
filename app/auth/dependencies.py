@@ -40,9 +40,11 @@ async def get_current_auth_user(
 def get_current_active_auth_user(
     user: UserSchema = Depends(get_current_auth_user),
 ):
-    if user.active:
-        return user
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail="inactive user",
-    )
+    # if user.active:
+    #     return user
+    # raise HTTPException(
+    #     status_code=status.HTTP_403_FORBIDDEN,
+    #     detail="inactive user",
+    # )
+
+    return user

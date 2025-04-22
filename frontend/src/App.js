@@ -1,23 +1,33 @@
 // App.js
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import LoginPage from './pages/auth/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import UsersPage from './pages/users/UsersPage';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import LoginPage from "./pages/auth/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import UsersPage from "./pages/users/UsersPage";
+import ChatPage from "./pages/chat/ChatPage";
 // import CompaniesPage from './pages/CompaniesPage';
-import CompaniesPage from './pages/companies/CompaniesPage'
-import UserFormPage from './pages/users/UserFormPage';
-import CompanyFormPage from './pages/companies/CompanyFormPage';
-import Navbar from './components/Navbar';
+import CompaniesPage from "./pages/companies/CompaniesPage";
+import UserFormPage from "./pages/users/UserFormPage";
+import CompanyFormPage from "./pages/companies/CompanyFormPage";
+import Navbar from "./components/Navbar";
+import Chat from "./pages/chat/Chat";
 
 const AppRoutes = () => {
   const { token } = useAuth();
-  
+
   return (
     <Routes>
-      <Route path="/login" element={!token ? <LoginPage /> : <Navigate to="/" />} />
-      
+      <Route
+        path="/login"
+        element={!token ? <LoginPage /> : <Navigate to="/" />}
+      />
+
       {token ? (
         <>
           <Route path="/" element={<DashboardPage />} />
@@ -27,6 +37,7 @@ const AppRoutes = () => {
           <Route path="/companies" element={<CompaniesPage />} />
           <Route path="/companies/new" element={<CompanyFormPage />} />
           <Route path="/companies/:id" element={<CompanyFormPage />} />
+          <Route path="/chat" element={<ChatPage />} />
         </>
       ) : (
         <Route path="*" element={<Navigate to="/login" />} />
